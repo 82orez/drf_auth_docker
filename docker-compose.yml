@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:16
+    container_name: drf_basic_auth_db
+    restart: always
+    volumes:
+      - local_db:/var/lib/postgresql/data
+    env_file:
+      - ./backend/.env
+    ports:
+      - "54321:5432"
+    networks:
+      - my_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: drf_auth_backend
+    restart: always
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    networks:
+      - my_network
+    command: >
+      sh -c "wait-for-it.sh db:5432 --timeout=30 --strict -- 
+             python manage.py migrate && 
+             python manage.py create_superuser &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: drf_auth_frontend
+    ports:
+      - "3000:3000"
+    restart: always
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend
+    networks:
+      - my_network
+
+volumes:
+  local_db:
+
+networks:
+  my_network:
+    driver: bridge
