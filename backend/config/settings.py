@@ -12,7 +12,7 @@ environ.Env.read_env(BASE_DIR / ".env")
 SECRET_KEY = env("SECRET_KEY", default="django-insecure-change-me")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
+DEBUG = env("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
@@ -128,9 +128,13 @@ REST_FRAMEWORK = {
     ],
 }
 
+
+# Frontend URL
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
+
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    FRONTEND_URL,
     "http://127.0.0.1:3000",
 ]
 
@@ -138,7 +142,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 # CSRF 설정
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
+    FRONTEND_URL,
     "http://127.0.0.1:3000",
 ]
 
@@ -154,8 +158,6 @@ DEFAULT_FROM_EMAIL = "noreply@dj-issue-vote.com"
 # EMAIL_HOST_USER = "resend"
 # EMAIL_HOST_PASSWORD = env("RESEND_API_KEY")
 
-# Frontend URL
-FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
 
 # Email Verification Token Settings
 EMAIL_VERIFICATION_TOKEN_EXPIRES_HOURS = env(
