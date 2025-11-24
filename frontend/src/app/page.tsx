@@ -2,9 +2,14 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Home() {
   const { user, loading, logout } = useAuth();
+  const router = useRouter();
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [navigatingTo, setNavigatingTo] = useState<string>("");
 
   if (loading) {
     return (
@@ -20,6 +25,11 @@ export default function Home() {
     } catch (error) {
       console.error("Logout failed:", error);
     }
+  };
+
+  const handleNavigation = (path: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    setIsNavigating(true);
+    setNavigatingTo(path);
   };
 
   return (
@@ -45,13 +55,35 @@ export default function Home() {
               <div className="space-y-3">
                 <Link
                   href="/auth/login"
-                  className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none">
-                  Sign In
+                  onClick={handleNavigation("/auth/login")}
+                  className={`flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none ${
+                    isNavigating && navigatingTo === "/auth/login" ? "cursor-not-allowed bg-indigo-400" : "bg-indigo-600 hover:bg-indigo-700"
+                  }`}>
+                  {isNavigating && navigatingTo === "/auth/login" ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    "Sign In"
+                  )}
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none">
-                  Create Account
+                  onClick={handleNavigation("/auth/register")}
+                  className={`flex w-full justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none ${
+                    isNavigating && navigatingTo === "/auth/register"
+                      ? "cursor-not-allowed border-gray-300 bg-gray-100 text-gray-400"
+                      : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                  }`}>
+                  {isNavigating && navigatingTo === "/auth/register" ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></div>
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    "Create Account"
+                  )}
                 </Link>
               </div>
             </div>
