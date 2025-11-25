@@ -167,7 +167,12 @@ EMAIL_VERIFICATION_TOKEN_EXPIRES_HOURS = env(
 # Session Settings
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = True if not DEBUG else False  # HTTPS에서 필요
+
+# SESSION_COOKIE_SECURE 값이 True 일 때는 https 환경에서만 session cookie 발행.
+# DEBUG=True, 즉 개발환경에서는 http/https 환경 구분하지 않고 항상 session cookie 발행.
+# DEBUG=False, 즉 배포환경에서는 https 환경에서만 session cookie 발행.
+SESSION_COOKIE_SECURE = True if not DEBUG else False
+
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SECURE = True if not DEBUG else False  # HTTPS에서 필요
 CSRF_COOKIE_HTTPONLY = True  # 추가 보안
