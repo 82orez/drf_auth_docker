@@ -129,21 +129,22 @@ REST_FRAMEWORK = {
 }
 
 
-# Frontend URL
-FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
-
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
-    FRONTEND_URL,
     "http://127.0.0.1:3000",
+    "http://localhost:3000",
+    "http://friending.ac",
+    "http://www.friending.ac",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF 설정
 CSRF_TRUSTED_ORIGINS = [
-    FRONTEND_URL,
     "http://127.0.0.1:3000",
+    "http://localhost:3000",
+    "http://friending.ac",
+    "http://www.friending.ac",
 ]
 
 # 이메일 설정 (개발 환경에서는 콘솔로 출력)
