@@ -142,7 +142,7 @@ CORS_ALLOWED_ORIGINS = [
     # "http://www.friending.ac:3000",
     "http://friending.ac",
     "http://www.friending.ac",
-    "http://52.78.48.238",
+    "http://3.37.73.132",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -155,7 +155,7 @@ CSRF_TRUSTED_ORIGINS = [
     # "http://www.friending.ac:3000",
     "http://friending.ac",
     "http://www.friending.ac",
-    "http://52.78.48.238",
+    "http://3.37.73.132",
 ]
 
 # 이메일 설정 (개발 환경에서는 콘솔로 출력)
