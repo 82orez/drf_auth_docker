@@ -16,6 +16,9 @@ DEBUG = env("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
+# Frontend URL for accounts/views.py - register
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
+
 
 # Application definition
 
