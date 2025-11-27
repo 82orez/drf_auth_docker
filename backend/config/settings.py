@@ -143,27 +143,30 @@ REST_FRAMEWORK = {
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
-    # "http://friending.ac:3000",
-    # "http://www.friending.ac:3000",
-    "http://friending.ac",
-    "http://www.friending.ac",
-    "http://3.39.215.212:3000",
+    "https://friending.ac",
+    "https://www.friending.ac",
 ]
+
+# 개발 환경에서만 localhost 추가
+if DEBUG:
+    CORS_ALLOWED_ORIGINS += [
+        "http://127.0.0.1:3000",
+        "http://localhost:3000",
+    ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF 설정
 CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
-    # "http://friending.ac:3000",
-    # "http://www.friending.ac:3000",
-    "http://friending.ac",
-    "http://www.friending.ac",
-    "http://3.39.215.212:3000",
+    "https://friending.ac",
+    "https://www.friending.ac",
 ]
+
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS += [
+        "http://127.0.0.1:3000",
+        "http://localhost:3000",
+    ]
 
 # 이메일 설정 (개발 환경에서는 콘솔로 출력)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -190,11 +193,11 @@ SESSION_COOKIE_SAMESITE = "Lax"
 # SESSION_COOKIE_SECURE 값이 True 일 때는 https 환경에서만 session cookie 발행.
 # DEBUG=True, 즉 개발환경에서는 http/https 환경 구분하지 않고 항상 session cookie 발행.
 # DEBUG=False, 즉 배포환경에서는 https 환경에서만 session cookie 발행.
-# SESSION_COOKIE_SECURE = True if not DEBUG else False
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True if not DEBUG else False
+# SESSION_COOKIE_SECURE = False
 
 CSRF_COOKIE_SAMESITE = "Lax"
-# CSRF_COOKIE_SECURE = True if not DEBUG else False  # HTTPS에서 필요
-CSRF_COOKIE_SECURE = False  # HTTPS에서 필요
+CSRF_COOKIE_SECURE = True if not DEBUG else False  # HTTPS에서 필요
+# CSRF_COOKIE_SECURE = False  # HTTPS에서 필요
 CSRF_COOKIE_HTTPONLY = True  # 추가 보안
 SESSION_COOKIE_AGE = 60 * 60 * 24  # 1일 (60초 * 60분 * 24시간)
