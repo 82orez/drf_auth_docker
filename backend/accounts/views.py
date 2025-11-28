@@ -195,50 +195,40 @@ def password_reset_request(request):
     if serializer.is_valid():
         email = serializer.validated_data["email"]
 
-        try:
-            user = User.objects.get(email=email)
+        # User exists (validated by serializer), proceed with token creation
+        user = User.objects.get(email=email)
 
-            # Invalidate old tokens
-            PasswordResetToken.objects.filter(user=user, is_used=False).update(
-                is_used=True
-            )
+        # Invalidate old tokens
+        PasswordResetToken.objects.filter(user=user, is_used=False).update(is_used=True)
 
-            # Create new token
-            token = PasswordResetToken.objects.create(user=user)
+        # Create new token
+        token = PasswordResetToken.objects.create(user=user)
 
-            # Send password reset email
-            reset_url = (
-                f"{settings.FRONTEND_URL}/auth/reset-password?token={token.token}"
-            )
-            subject = "Password Reset Request"
-            message = f"""
-            Hi! {user.email},
-            
-            You requested a password reset. Please click the link below to reset your password:
-            {reset_url}
-            
-            This link will expire in 1 hour.
-            
-            If you didn't request a password reset, please ignore this email.
-            """
+        # Send password reset email
+        reset_url = f"{settings.FRONTEND_URL}/auth/reset-password?token={token.token}"
+        subject = "Password Reset Request"
+        message = f"""
+        Hi! {user.email},
+    
+        You requested a password reset. Please click the link below to reset your password:
+        {reset_url}
+    
+        This link will expire in 1 hour.
+    
+        If you didn't request a password reset, please ignore this email.
+        """
 
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-                fail_silently=False,
-            )
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
 
-            return Response(
-                {"message": "Password reset email sent."}, status=status.HTTP_200_OK
-            )
-
-        except User.DoesNotExist:
-            # Don't reveal if email exists or not for security reasons
-            return Response(
-                {"message": "Password reset email sent."}, status=status.HTTP_200_OK
-            )
+        return Response(
+            {"message": "Password reset email sent."}, status=status.HTTP_200_OK
+        )
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

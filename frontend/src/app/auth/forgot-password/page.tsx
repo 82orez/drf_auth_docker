@@ -21,7 +21,17 @@ export default function ForgotPassword() {
       await requestPasswordReset(email);
       setMessage("Password reset email sent. Please check your email.");
     } catch (err: any) {
-      setError(err.response?.data?.detail || "Failed to send password reset email.");
+      // Handle specific error messages from the backend
+      if (err.response?.data?.email) {
+        // Handle field-specific errors (like email validation)
+        setError(err.response.data.email[0]);
+      } else if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Failed to send password reset email.");
+      }
     } finally {
       setLoading(false);
     }
