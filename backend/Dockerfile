@@ -19,6 +19,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 소스 코드 복사
 COPY . .
 
+# 시작 스크립트에 실행 권한 부여
+RUN chmod +x /app/start.sh
+
 # Django 정적 파일 수집을 위한 디렉터리 생성
 RUN mkdir -p /app/staticfiles /app/media
 
@@ -34,4 +37,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/admin/ || exit 1
 
 # Django 서버 실행
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["sh", "/app/start.sh"]
