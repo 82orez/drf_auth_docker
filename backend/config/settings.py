@@ -172,7 +172,6 @@ if DEBUG:
     ]
 
 
-
 # 이메일 설정 (개발 환경에서는 콘솔로 출력)
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -185,7 +184,7 @@ else:
     EMAIL_USE_TLS = True
     EMAIL_PORT = 587
     EMAIL_HOST_USER = "resend"
-    EMAIL_HOST_PASSWORD = env("RESEND_API_KEY")
+    EMAIL_HOST_PASSWORD = env("RESEND_API_KEY", default="")
 
 
 # Email Verification Token Settings

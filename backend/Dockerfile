@@ -22,9 +22,6 @@ COPY . .
 # Django 정적 파일 수집을 위한 디렉터리 생성
 RUN mkdir -p /app/staticfiles /app/media
 
-# 🚩 빌드할 때 static 모으기
-RUN python manage.py collectstatic --noinput
-
 # 포트 8000 노출
 EXPOSE 8000
 
