@@ -85,18 +85,18 @@ if DEBUG:
     AUTH_PASSWORD_VALIDATORS = []
 else:
     AUTH_PASSWORD_VALIDATORS = [
-        {
-            "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-        },
+        # {
+        #     "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        # },
+        # {
+        #     "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        # },
+        # {
+        #     "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        # },
+        # {
+        #     "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        # },
     ]
 
 # Custom User Model
@@ -171,17 +171,21 @@ if DEBUG:
         "http://localhost:3000",
     ]
 
-# 이메일 설정 (개발 환경에서는 콘솔로 출력)
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "noreply@dj-issue-vote.com"
 
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# DEFAULT_FROM_EMAIL = "Django Allauth <noreply@friending.ac>"
-# EMAIL_HOST = "smtp.resend.com"
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = "resend"
-# EMAIL_HOST_PASSWORD = env("RESEND_API_KEY")
+
+# 이메일 설정 (개발 환경에서는 콘솔로 출력)
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    DEFAULT_FROM_EMAIL = "noreply@dj-issue-vote.com"
+
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    DEFAULT_FROM_EMAIL = "Django Allauth <noreply@friending.ac>"
+    EMAIL_HOST = "smtp.resend.com"
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = "resend"
+    EMAIL_HOST_PASSWORD = env("RESEND_API_KEY")
 
 
 # Email Verification Token Settings
