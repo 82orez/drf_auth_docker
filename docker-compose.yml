@@ -23,9 +23,9 @@ services:
     ports:
       - "3000:3000"
     restart: always
-#    volumes:
-#      - ./frontend:/app
-#      - /app/node_modules
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     env_file:
       - ./frontend/.env
     depends_on:
