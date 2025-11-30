@@ -19,6 +19,10 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 # Frontend URL for accounts/views.py - register
 FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
 
+# Admins for error email notifications
+ADMINS = [
+    ("Admin", env("ADMIN_EMAIL", default="admin@example.com")),
+]
 
 # Application definition
 
@@ -207,3 +211,78 @@ CSRF_COOKIE_SECURE = True if not DEBUG else False  # HTTPS에서 필요
 # CSRF_COOKIE_SECURE = False  # HTTPS에서 필요
 CSRF_COOKIE_HTTPONLY = True  # 추가 보안
 SESSION_COOKIE_AGE = 60 * 60 * 24  # 1일 (60초 * 60분 * 24시간)
+
+
+# LOGGING 설정
+LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
+
+# 로그 파일을 저장할 디렉토리 (Docker에서는 /app/logs)
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    # 1) 로그 포맷
+    "formatters": {
+        "simple": {
+            "format": "[{levelname}] {message}",
+            "style": "{",
+        },
+        "verbose": {
+            "format": "[{asctime}] [{levelname}] {name}:{lineno} - {message}",
+            "style": "{",
+        },
+    },
+    # 2) 핸들러: 로그를 어디로 보낼지
+    "handlers": {
+        # Docker 환경에서는 콘솔 로그가 매우 중요 (docker logs 로 확인)
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": LOG_LEVEL,
+            "formatter": "simple",
+        },
+        # 배포 환경에서 파일에 쌓기 (로그 로테이션까지)
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "verbose",
+            "filename": str(LOG_DIR / "django.log"),
+            "maxBytes": 1024 * 1024 * 5,  # 5MB 넘으면 새 파일
+            "backupCount": 5,  # 최대 5개까지 백업
+        },
+        # 심각한 에러를 관리자에게 이메일 (DEBUG=False일 때만 의미 있음)
+        "mail_admins": {
+            "class": "django.utils.log.AdminEmailHandler",
+            "level": "ERROR",
+        },
+    },
+    # 3) 로거: 누가 어떤 핸들러를 쓸지
+    "loggers": {
+        # Django 전체
+        "django": {
+            "handlers": ["console", "file"] if not DEBUG else ["console"],
+            "level": LOG_LEVEL,
+            "propagate": True,
+        },
+        # 요청/응답 관련 에러 (500, 404 등)
+        "django.request": {
+            "handlers": ["file", "mail_admins"] if not DEBUG else ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        # DB 쿼리 로그 (개발할 때 SQL 보고 싶을 때 유용)
+        "django.db.backends": {
+            "handlers": ["console"],
+            "level": "DEBUG" if DEBUG else "WARNING",
+            "propagate": False,
+        },
+        # 내가 만든 앱용 (예: accounts, todo 등)
+        # __name__ 기준으로 logger 이름이 'accounts.views', 'accounts.models' 이런 식으로 잡힘
+        "accounts": {
+            "handlers": ["console", "file"] if not DEBUG else ["console"],
+            "level": "DEBUG" if DEBUG else "INFO",
+            "propagate": False,
+        },
+    },
+}

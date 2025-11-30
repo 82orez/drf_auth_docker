@@ -7,6 +7,7 @@ services:
     restart: always
     volumes:
       - ./backend:/app
+      - ./backend/logs:/app/logs  # 로그 파일 영구 저장
     ports:
       - "8000:8000"
     env_file:

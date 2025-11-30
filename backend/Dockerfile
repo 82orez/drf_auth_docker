@@ -23,7 +23,7 @@ COPY . .
 RUN chmod +x /app/start.sh
 
 # Django 정적 파일 수집을 위한 디렉터리 생성
-RUN mkdir -p /app/staticfiles /app/media
+RUN mkdir -p /app/staticfiles /app/media /app/logs
 
 # 포트 8000 노출
 EXPOSE 8000
