@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 
-export default function VerifyEmail() {
+function VerifyEmailContent() {
   const [status, setStatus] = useState<"ready" | "loading" | "success" | "error">("ready");
   const [message, setMessage] = useState("");
   const [token, setToken] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export default function VerifyEmail() {
       setStatus("success");
       setMessage("Email verified successfully!");
 
-      // Redirect to login after 3 seconds
+      // Redirect to the login-page after 3 seconds
       setTimeout(() => {
         router.push("/auth/login");
       }, 3000);
@@ -115,5 +116,21 @@ export default function VerifyEmail() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmail() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 animate-spin text-4xl">⏳</div>
+            <h2 className="mt-6 text-2xl font-bold text-gray-900">Loading...</h2>
+          </div>
+        </div>
+      }>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

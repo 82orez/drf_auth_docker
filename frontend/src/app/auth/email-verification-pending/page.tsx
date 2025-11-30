@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 
-export default function EmailVerificationPending() {
+function EmailVerificationPendingContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,7 @@ export default function EmailVerificationPending() {
 
             <div className={"mt-6 space-y-2"}>
               <p className="text-sm text-gray-600">Please click the link in the email to verify your account and complete your sign-up.</p>
-              <p className="text-sm text-gray-600">If the email hasn’t arrived, be sure to check your spam or junk folder.</p>
+              <p className="text-sm text-gray-600">If the email hasn't arrived, be sure to check your spam or junk folder.</p>
               {/*<p className="text-sm text-gray-600">Or click the button below to request a new verification email.</p>*/}
             </div>
           </div>
@@ -75,5 +75,21 @@ export default function EmailVerificationPending() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function EmailVerificationPending() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 animate-spin text-4xl">⏳</div>
+            <h2 className="mt-6 text-2xl font-bold text-gray-900">Loading...</h2>
+          </div>
+        </div>
+      }>
+      <EmailVerificationPendingContent />
+    </Suspense>
   );
 }
