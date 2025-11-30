@@ -11,8 +11,8 @@ node_modules
 out
 
 # 환경 변수 & 설정
-.env
-.env*.local
+#.env
+#.env*.local
 
 # 로그 & 캐시
 npm-debug.log*
