@@ -17,49 +17,71 @@ from .serializers import (
     UserSerializer,
 )
 from django.middleware.csrf import get_token
+import logging
+
+# 로거 생성
+logger = logging.getLogger(__name__)  # 'accounts.views'로 로그 남음
 
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def register(request):
+    logger.info(
+        f"User registration attempt for email: {request.data.get('email', 'unknown')}"
+    )
+
     serializer = UserRegistrationSerializer(data=request.data)
     if serializer.is_valid():
-        user = serializer.save()
+        try:
+            user = serializer.save()
+            logger.info(f"User registered successfully: {user.email}")
 
-        # Create email verification token
-        token = EmailVerificationToken.objects.create(user=user)
+            # Create email verification token
+            token = EmailVerificationToken.objects.create(user=user)
 
-        # Send verification email
-        verification_url = (
-            f"{settings.FRONTEND_URL}/auth/verify-email?token={token.token}"
-        )
-        subject = "Verify your email address"
-        message = f"""
-        Hi! {user.email},
+            # Send verification email
+            verification_url = (
+                f"{settings.FRONTEND_URL}/auth/verify-email?token={token.token}"
+            )
+            subject = "Verify your email address"
+            message = f"""
+            Hi! {user.email},
         
-        Please click the link below to verify your email address:
-        {verification_url}
+            Please click the link below to verify your email address:
+            {verification_url}
         
-        This link will expire in 24 hours.
+            This link will expire in 24 hours.
         
-        If you didn't create an account, please ignore this email.
-        """
+            If you didn't create an account, please ignore this email.
+            """
 
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-            fail_silently=False,
-        )
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+                fail_silently=False,
+            )
 
-        return Response(
-            {
-                "message": "Registration successful. Please check your email for verification.",
-                "user": UserSerializer(user).data,
-            },
-            status=status.HTTP_201_CREATED,
-        )
+            logger.info(f"Verification email sent to: {user.email}")
+
+            return Response(
+                {
+                    "message": "Registration successful. Please check your email for verification.",
+                    "user": UserSerializer(user).data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        except Exception as e:
+            logger.error(
+                f"Registration failed for {request.data.get('email', 'unknown')}: {str(e)}"
+            )
+            return Response(
+                {"error": "Registration failed. Please try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+    else:
+        logger.warning(f"Invalid registration data: {serializer.errors}")
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
