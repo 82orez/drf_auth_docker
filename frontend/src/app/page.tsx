@@ -67,12 +67,29 @@ export default function Home() {
       return;
     }
 
+    // ✅ 이미지 파일 타입(JPG/PNG) 검사
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    const allowedExtensions = ["jpg", "jpeg", "png"];
+    const allowedMimeTypes = ["image/jpeg", "image/png"];
+
+    const isValidType = (ext && allowedExtensions.includes(ext)) || (file.type && allowedMimeTypes.includes(file.type));
+
+    if (!isValidType) {
+      setUploadError("JPG 또는 PNG 형식의 이미지 파일만 업로드할 수 있습니다.");
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      // 선택된 파일 초기화
+      e.target.value = "";
+      return;
+    }
+
     // 간단한 용량 체크 (예: 2MB 제한)
     const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
       setUploadError("이미지 크기는 2MB 이하여야 합니다.");
       setSelectedFile(null);
       setPreviewUrl(null);
+      e.target.value = "";
       return;
     }
 
@@ -173,11 +190,11 @@ export default function Home() {
                       <label className="block text-sm font-medium text-gray-700">이미지 선택</label>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/png"
                         onChange={handleFileChange}
                         className="mt-1 block w-full text-sm text-gray-900 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
                       />
-                      <p className="mt-1 text-xs text-gray-400">JPG, PNG 등 이미지 파일 / 최대 2MB</p>
+                      <p className="mt-1 text-xs text-gray-400">JPEG, JPG, PNG 이미지 파일만 업로드 가능 / 최대 2MB</p>
                     </div>
 
                     <button
