@@ -46,4 +46,12 @@ export const authAPI = {
   passwordResetConfirm: (data: { token: string; password: string; password_confirm: string }) => api.post("/auth/password-reset-confirm/", data),
 
   getProfile: () => api.get("/auth/profile/"),
+
+  updateProfile: (data: FormData) => {
+    return api.patch("/auth/profile/", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
 };

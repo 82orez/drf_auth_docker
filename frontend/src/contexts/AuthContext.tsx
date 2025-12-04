@@ -9,6 +9,7 @@ interface User {
   username: string;
   is_email_verified: boolean;
   date_joined: string;
+  profile_image: string | null;
 }
 
 interface AuthContextType {
@@ -22,6 +23,7 @@ interface AuthContextType {
   requestPasswordReset: (email: string) => Promise<void>;
   confirmPasswordReset: (token: string, password: string, passwordConfirm: string) => Promise<void>;
   refreshUser: () => Promise<void>;
+  updateProfile: (data: FormData) => Promise<any>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,6 +48,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     initializeAuth();
   }, []);
+
+  const updateProfile = async (data: FormData) => {
+    const response = await authAPI.updateProfile(data);
+    // 프로필 업데이트 후 사용자 정보 새로고침
+    await refreshUser();
+    return response.data;
+  };
 
   const login = async (email: string, password: string) => {
     const response = await authAPI.login({ email, password });
@@ -90,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         requestPasswordReset,
         confirmPasswordReset,
         refreshUser,
+        updateProfile,
       }}>
       {children}
     </AuthContext.Provider>

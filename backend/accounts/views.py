@@ -359,15 +359,59 @@ def password_reset_confirm(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET"])
+@api_view(["GET", "PATCH"])
 def user_profile(request):
     user_email = request.user.email if request.user.is_authenticated else "anonymous"
     logger.info(f"User profile request from user: {user_email}")
 
-    serializer = UserSerializer(request.user)
+    if request.method == "GET":
+        serializer = UserSerializer(request.user)
+        logger.debug(f"User profile data returned for user: {user_email}")
+        return Response(serializer.data)
 
-    logger.debug(f"User profile data returned for user: {user_email}")
-    return Response(serializer.data)
+    elif request.method == "PATCH":
+        logger.info(f"Profile update request from user: {user_email}")
+
+        # profile_image만 업데이트 가능하도록 제한
+        allowed_fields = ["profile_image"]
+        update_data = {
+            key: value for key, value in request.data.items() if key in allowed_fields
+        }
+
+        if not update_data:
+            logger.warning(
+                f"No valid fields provided for profile update by user: {user_email}"
+            )
+            return Response(
+                {"error": "No valid fields provided for update."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = UserSerializer(request.user, data=update_data, partial=True)
+
+        if serializer.is_valid():
+            try:
+                user = serializer.save()
+                logger.info(f"Profile updated successfully for user: {user_email}")
+
+                return Response(
+                    {
+                        "message": "Profile updated successfully.",
+                        "user": UserSerializer(user).data,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            except Exception as e:
+                logger.error(f"Profile update failed for user {user_email}: {str(e)}")
+                return Response(
+                    {"error": "Profile update failed. Please try again."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+        else:
+            logger.warning(
+                f"Invalid profile update data for user {user_email}: {serializer.errors}"
+            )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET"])

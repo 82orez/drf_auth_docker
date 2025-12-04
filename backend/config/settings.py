@@ -214,7 +214,8 @@ SESSION_COOKIE_AGE = 60 * 60 * 24  # 1일 (60초 * 60분 * 24시간)
 
 
 # LOGGING 설정
-LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
+# LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
+LOG_LEVEL = "INFO"
 
 # 로그 파일을 저장할 디렉토리 (Docker에서는 /app/logs)
 LOG_DIR = BASE_DIR / "logs"
