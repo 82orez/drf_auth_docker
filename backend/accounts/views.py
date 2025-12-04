@@ -17,6 +17,9 @@ from .serializers import (
     UserSerializer,
 )
 from django.middleware.csrf import get_token
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
+
 import logging
 
 # 로거 생성
@@ -360,6 +363,7 @@ def password_reset_confirm(request):
 
 
 @api_view(["GET", "PATCH"])
+@parser_classes([JSONParser, FormParser, MultiPartParser])
 def user_profile(request):
     user_email = request.user.email if request.user.is_authenticated else "anonymous"
     logger.info(f"User profile request from user: {user_email}")

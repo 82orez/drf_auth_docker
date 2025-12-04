@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "accounts",
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -127,9 +128,49 @@ STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic 결과물
 # Add this line for Whitenoise
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# 업로드 파일
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+
+# Media Files
+# AWS / Lightsail Object Storage
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default=None)
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default=None)
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default=None)
+AWS_S3_REGION_NAME = env(
+    "AWS_S3_REGION_NAME", default="ap-northeast-2"
+)  # 서울이면 이 값
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_S3_ADDRESSING_STYLE = "virtual"  # <bucket>.s3.<region>.amazonaws.com
+DEBUG = env("DEBUG", default=False)
+
+# 개발(로컬)에서는 media 폴더, 배포에서는 Lightsail 버킷을 쓰게 만듭니다.
+if DEBUG:
+    # 개발 환경: 로컬 media 폴더 사용
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            # 이미 사용 중인 staticfiles backend 가 있다면 그대로 유지
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
+else:
+    # 프로덕션: Lightsail Object Storage(S3 호환 버킷)를 media 저장소로 사용
+    MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/"
+
+    STORAGES = {
+        "default": {
+            # config 는 settings.py 가 들어있는 django 프로젝트 패키지 이름
+            "BACKEND": "config.storages.PublicMediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
