@@ -53,10 +53,7 @@ export default function Register() {
         }
         // Check for email
         else if (data.email && data.email.length > 0) {
-          const msg = data.email[0];
-          if (msg.includes("user with this email already exists")) {
-            errorMessage = "An account with this email already exists. Please sign in.";
-          }
+          errorMessage = data.email[0];
         }
         // Check for field-specific errors
         else if (typeof data === "object") {
