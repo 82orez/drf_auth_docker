@@ -171,16 +171,11 @@ export default function Home() {
                   {/* 현재 프로필 이미지 / 미리보기 */}
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-24 w-24 overflow-hidden rounded-full bg-gray-100">
-                      {previewUrl ? (
-                        <img src={previewUrl} alt="Profile preview" className="h-full w-full object-cover" />
-                      ) : profileImageUrl ? (
-                        <img src={profileImageUrl} alt="Profile" className="h-full w-full object-cover" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">No Image</div>
-                      )}
+                      {/* previewUrl > profileImageUrl > 기본 이미지(anon-user.jpg) 순으로 사용 */}
+                      <img src={previewUrl || profileImageUrl || "/anon-user.jpg"} alt="Profile" className="h-full w-full object-cover" />
                     </div>
                     <span className="text-xs text-gray-400">
-                      {selectedFile ? selectedFile.name : profileImageUrl ? "현재 프로필 이미지" : "이미지 없음"}
+                      {selectedFile ? selectedFile.name : profileImageUrl ? "현재 프로필 이미지" : "기본 프로필 이미지"}
                     </span>
                   </div>
 
