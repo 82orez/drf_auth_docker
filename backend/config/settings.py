@@ -19,10 +19,6 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 # Frontend URL for accounts/views.py - register
 FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
 
-# Admins for error email notifications
-ADMINS = [
-    ("Admin", env("ADMIN_EMAIL", default="admin@example.com")),
-]
 
 # Application definition
 
@@ -139,7 +135,6 @@ AWS_S3_REGION_NAME = env(
 )  # 서울이면 이 값
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 AWS_S3_ADDRESSING_STYLE = "virtual"  # <bucket>.s3.<region>.amazonaws.com
-DEBUG = env("DEBUG", default=False)
 
 # 개발(로컬)에서는 media 폴더, 배포에서는 Lightsail 버킷을 쓰게 만듭니다.
 if DEBUG:
@@ -245,11 +240,9 @@ SESSION_COOKIE_SAMESITE = "Lax"
 # DEBUG=True, 즉 개발환경에서는 http/https 환경 구분하지 않고 항상 session cookie 발행.
 # DEBUG=False, 즉 배포환경에서는 https 환경에서만 session cookie 발행.
 SESSION_COOKIE_SECURE = True if not DEBUG else False
-# SESSION_COOKIE_SECURE = False
 
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SECURE = True if not DEBUG else False  # HTTPS에서 필요
-# CSRF_COOKIE_SECURE = False  # HTTPS에서 필요
 CSRF_COOKIE_HTTPONLY = True  # 추가 보안
 SESSION_COOKIE_AGE = 60 * 60 * 24  # 1일 (60초 * 60분 * 24시간)
 
@@ -257,6 +250,11 @@ SESSION_COOKIE_AGE = 60 * 60 * 24  # 1일 (60초 * 60분 * 24시간)
 # LOGGING 설정
 # LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
 LOG_LEVEL = "INFO"
+
+# Admins for error email notifications
+ADMINS = [
+    ("Admin", env("ADMIN_EMAIL", default="admin@example.com")),
+]
 
 # 로그 파일을 저장할 디렉토리 (Docker에서는 /app/logs)
 LOG_DIR = BASE_DIR / "logs"
