@@ -71,12 +71,28 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if DEBUG:
+    # 개발 환경: SQLite 사용
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    # 배포 환경: PostgreSQL 사용
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("POSTGRES_DB", default="friending"),  # DB 이름
+            "USER": env("POSTGRES_USER", default="friending_user"),  # DB 사용자
+            "PASSWORD": env("POSTGRES_PASSWORD", default=""),  # DB 비밀번호
+            "HOST": env(
+                "POSTGRES_HOST", default="db"
+            ),  # docker-compose 쓰면 서비스 이름 등
+            "PORT": env("POSTGRES_PORT", default="5432"),
+        }
+    }
 
 
 # Password validation
